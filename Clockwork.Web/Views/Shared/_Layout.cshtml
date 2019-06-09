@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>@ViewBag.Title</title>
+    <meta charset="utf-8" />
+    <style>
+        body {
+            font-family: 'Franklin Gothic';
+        }
+        table, th, tr, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th {
+            font-size: 16px;
+            border-bottom: double;
+        }
+        td {
+            padding-left: 5px;
+            padding-right: 5px;
+            padding-top: 7px;
+        }
+        .timeHead {
+            font-weight: bold;
+        }
+        /*@@media screen and (max-width: 600px) {
+            table {
+                width: 100%;
+            }
+            p, h2 {
+                font-size: 7vw;
+            }
+            table {
+                font-size: 5vw;
+            }
+        }*/
+
+        @@media screen and (max-width: 400px) {
+            * {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @RenderBody()
+</body>
+</html>

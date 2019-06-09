@@ -1,0 +1,119 @@
+﻿@using Clockwork.Web.Models;
+
+@{
+    var supportedTimeZones = ViewData["SupportedTimeZones"] as List<TimeZoneInfo>;
+    var timeHistory = ViewData["TimeHistory"] as List<ClockworkDisplayModel>;
+    var currentTimeZone = ViewData["CurrentTimeZone"] as string;
+    var endpointUrl = ViewData["ClockworkEndpointUrl"] as string;
+}
+
+<script>
+    var localTime;
+    var utcTime;
+
+    function UserAction() {
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                var parsedResponse = JSON.parse(this.response);
+
+                document.getElementById("currentTime").innerHTML = parsedResponse.time;
+                document.getElementById("currentUtcTime").innerHTML = parsedResponse.utcTime;
+                document.getElementById("clientIp").innerHTML = parsedResponse.clientIp;
+
+                var timeElement = document.getElementById("prettyDateTimeContainer");
+                timeElement.hidden = false;
+
+                var timeHistoryBodyElem = document.getElementById("timeHistoryBody");
+
+                var prevRow = timeHistoryBodyElem.firstElementChild;
+                if (prevRow != null) {
+                    prevRow.removeAttribute("style");
+                }
+
+                var row = timeHistoryBodyElem.insertRow(0);
+                var id = row.insertCell(0);
+                var time = row.insertCell(1);
+                var utc = row.insertCell(2);
+                var ip = row.insertCell(3);
+                row.style.fontWeight = "bold";
+                row.style.fontStyle = "italic";
+
+                id.innerHTML = parsedResponse.currentTimeQueryId;
+                time.innerHTML = parsedResponse.time;
+                utc.innerHTML = parsedResponse.utcTime.substring(0, parsedResponse.utcTime.length - 1);
+                ip.innerHTML = parsedResponse.clientIp;
+            }
+        };
+
+        var currentTimeUrl = "@endpointUrl/api/currenttime";
+        var timeZoneOptions = document.getElementById("timeZones");
+        if (timeZoneOptions.value != "default") {
+            currentTimeUrl += "?timeZoneId=" + timeZoneOptions.value;
+        }
+        xhttp.open("GET", currentTimeUrl, true);
+        xhttp.setRequestHeader("Content-type", "application/json");
+        xhttp.send();
+    }
+</script>
+
+<section>
+    <h2>AWH Clockwork Project @ViewData["Version"] on @ViewData["Runtime"]!</h2>
+
+    <div id="dateTimeFormatSelectorContainer">
+        <p id="systemTimeZone">Current System Timezone:</p>
+        <p class="timeHead">@currentTimeZone</p>
+        <p>-OR-</p>
+        <p>Select a different time zone below:</p>
+        <select id="timeZones">
+            <option value="default">&lt;Current System Timezone&gt;</option>
+            @if (supportedTimeZones != null)
+            {
+                foreach (var timeZone in supportedTimeZones)
+                {
+                    <option value="@timeZone.Id">@timeZone.DisplayName</option>
+                }
+            }
+        </select>
+    </div>
+
+    <button type="submit" onclick="UserAction()">Get the time</button>
+
+    <div id="prettyDateTimeContainer" style="padding-top: 10px;" hidden="hidden">
+        <p class="timeHead">Current Time:</p>
+        <p id="currentTime"></p>
+        <p class="timeHead">UTC:</p>
+        <p id="currentUtcTime"></p>
+        <p class="timeHead">Client IP Address:</p>
+        <p id="clientIp"></p>
+    </div>
+</section>
+<section>
+    <h2>Time History</h2>
+    <div id="prettyDateTimeHistoryContainer">
+        <table class="tableLayout">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Time</th>
+                    <th>UTC</th>
+                    <th>Client IP Address</th>
+                </tr>
+            </thead>
+            <tbody id="timeHistoryBody">
+                @if (timeHistory != null)
+                {
+                    foreach (var timeHist in timeHistory.OrderByDescending(x => x.CurrentTimeQueryId))
+                    {
+                        <tr>
+                            <td>@timeHist.CurrentTimeQueryId</td>
+                            <td>@timeHist.Time</td>
+                            <td>@timeHist.UtcTime</td>
+                            <td>@timeHist.ClientIp</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</section>
