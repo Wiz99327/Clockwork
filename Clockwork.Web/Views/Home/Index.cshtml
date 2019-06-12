@@ -57,63 +57,59 @@
     }
 </script>
 
-<section>
-    <h2>AWH Clockwork Project @ViewData["Version"] on @ViewData["Runtime"]!</h2>
+<h2>AWH Clockwork Project @ViewData["Version"] on @ViewData["Runtime"]!</h2>
 
-    <div id="dateTimeFormatSelectorContainer">
-        <p id="systemTimeZone">Current System Timezone:</p>
-        <p class="timeHead">@currentTimeZone</p>
-        <p>-OR-</p>
-        <p>Select a different time zone below:</p>
-        <select id="timeZones">
-            <option value="default">&lt;Current System Timezone&gt;</option>
-            @if (supportedTimeZones != null)
+<div id="dateTimeFormatSelectorContainer">
+    <p id="systemTimeZone">Current System Timezone:</p>
+    <p class="timeHead">@currentTimeZone</p>
+    <p>-OR-</p>
+    <p>Select a different time zone below:</p>
+    <select id="timeZones">
+        <option value="default">&lt;Current System Timezone&gt;</option>
+        @if (supportedTimeZones != null)
+        {
+            foreach (var timeZone in supportedTimeZones)
             {
-                foreach (var timeZone in supportedTimeZones)
+                <option value="@timeZone.Id">@timeZone.DisplayName</option>
+            }
+        }
+    </select>
+</div>
+<br />
+<button type="submit" onclick="UserAction()">Get the time</button>
+
+<div id="prettyDateTimeContainer" style="padding-top: 10px;" hidden="hidden">
+    <p class="timeHead">Current Time:</p>
+    <p id="currentTime"></p>
+    <p class="timeHead">UTC:</p>
+    <p id="currentUtcTime"></p>
+    <p class="timeHead">Client IP Address:</p>
+    <p id="clientIp"></p>
+</div>
+<h2>Time History</h2>
+<div id="prettyDateTimeHistoryContainer">
+    <table class="tableLayout">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Time</th>
+                <th>UTC</th>
+                <th>Client IP Address</th>
+            </tr>
+        </thead>
+        <tbody id="timeHistoryBody">
+            @if (timeHistory != null)
+            {
+                foreach (var timeHist in timeHistory.OrderByDescending(x => x.CurrentTimeQueryId))
                 {
-                    <option value="@timeZone.Id">@timeZone.DisplayName</option>
+                    <tr>
+                        <td>@timeHist.CurrentTimeQueryId</td>
+                        <td>@timeHist.Time</td>
+                        <td>@timeHist.UtcTime</td>
+                        <td>@timeHist.ClientIp</td>
+                    </tr>
                 }
             }
-        </select>
-    </div>
-
-    <button type="submit" onclick="UserAction()">Get the time</button>
-
-    <div id="prettyDateTimeContainer" style="padding-top: 10px;" hidden="hidden">
-        <p class="timeHead">Current Time:</p>
-        <p id="currentTime"></p>
-        <p class="timeHead">UTC:</p>
-        <p id="currentUtcTime"></p>
-        <p class="timeHead">Client IP Address:</p>
-        <p id="clientIp"></p>
-    </div>
-</section>
-<section>
-    <h2>Time History</h2>
-    <div id="prettyDateTimeHistoryContainer">
-        <table class="tableLayout">
-            <thead>
-                <tr>
-                    <th>Id</th>
-                    <th>Time</th>
-                    <th>UTC</th>
-                    <th>Client IP Address</th>
-                </tr>
-            </thead>
-            <tbody id="timeHistoryBody">
-                @if (timeHistory != null)
-                {
-                    foreach (var timeHist in timeHistory.OrderByDescending(x => x.CurrentTimeQueryId))
-                    {
-                        <tr>
-                            <td>@timeHist.CurrentTimeQueryId</td>
-                            <td>@timeHist.Time</td>
-                            <td>@timeHist.UtcTime</td>
-                            <td>@timeHist.ClientIp</td>
-                        </tr>
-                    }
-                }
-            </tbody>
-        </table>
-    </div>
-</section>
+        </tbody>
+    </table>
+</div>
