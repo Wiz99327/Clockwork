@@ -40,8 +40,8 @@
                 row.style.fontStyle = "italic";
 
                 id.innerHTML = parsedResponse.currentTimeQueryId;
-                time.innerHTML = parsedResponse.time;
-                utc.innerHTML = parsedResponse.utcTime.substring(0, parsedResponse.utcTime.length - 1);
+                time.innerHTML = parsedResponse.time.replace("T", " ");
+                utc.innerHTML = parsedResponse.utcTime.replace("T", " ").substring(0, parsedResponse.utcTime.length - 1);
                 ip.innerHTML = parsedResponse.clientIp;
             }
         };
@@ -88,7 +88,7 @@
 </div>
 <h2>Time History</h2>
 <div id="prettyDateTimeHistoryContainer">
-    <table class="tableLayout">
+    <table>
         <thead>
             <tr>
                 <th>Id</th>
@@ -104,8 +104,8 @@
                 {
                     <tr>
                         <td>@timeHist.CurrentTimeQueryId</td>
-                        <td>@timeHist.Time</td>
-                        <td>@timeHist.UtcTime</td>
+                        <td>@timeHist.Time.Replace('T', ' ')</td>
+                        <td>@timeHist.UtcTime.Replace('T', ' ')</td>
                         <td>@timeHist.ClientIp</td>
                     </tr>
                 }

@@ -29,34 +29,22 @@ namespace Clockwork.Web.Controllers
             HttpClient httpClient = new HttpClient();
             try
             {
-                var timeZoneTask = httpClient.GetAsync($"{endpointUrl}/api/currenttime/supportedTimeZones");
-                var historyTask = httpClient.GetAsync($"{endpointUrl}/api/currenttime/history");
+                var timeZoneRsp = await httpClient.GetAsync($"{endpointUrl}/api/currenttime/supportedTimeZones").ConfigureAwait(false);
+                var historyRsp = await httpClient.GetAsync($"{endpointUrl}/api/currenttime/history").ConfigureAwait(false);
 
-                Task.WaitAll(timeZoneTask, historyTask);
-
-                var timeZoneRsp = await timeZoneTask.ConfigureAwait(false);
-                var historyRsp = await historyTask.ConfigureAwait(false);
-
-                Task<string> timeZoneContentTask = null;
                 if (timeZoneRsp?.Content != null)
                 {
-                    timeZoneContentTask = timeZoneRsp.Content.ReadAsStringAsync();
+                    var supportedTimeZones = await timeZoneRsp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ViewData["SupportedTimeZones"] = JsonConvert.DeserializeObject<List<TimeZoneInfo>>(supportedTimeZones);
                 }
 
-                Task<string> timeHistoryContentTask = null;
+                ViewData["CurrentTimeZone"] = TimeZoneInfo.Local.DisplayName;
+
                 if (historyRsp?.Content != null)
                 {
-                    timeHistoryContentTask = historyRsp.Content.ReadAsStringAsync();
+                    var timeHistory = await historyRsp.Content.ReadAsStringAsync().ConfigureAwait(false);
+                    ViewData["TimeHistory"] = JsonConvert.DeserializeObject<List<ClockworkDisplayModel>>(timeHistory);
                 }
-
-                Task.WaitAll(timeZoneContentTask, timeHistoryContentTask);
-
-                var supportedTimeZones = await timeZoneContentTask.ConfigureAwait(false);
-                var timeHistory = await timeHistoryContentTask.ConfigureAwait(false);
-
-                ViewData["SupportedTimeZones"] = JsonConvert.DeserializeObject<List<TimeZoneInfo>>(supportedTimeZones);
-                ViewData["CurrentTimeZone"] = TimeZoneInfo.Local.DisplayName;
-                ViewData["TimeHistory"] = JsonConvert.DeserializeObject<List<ClockworkDisplayModel>>(timeHistory);
             }
             catch (Exception ex)
             {
