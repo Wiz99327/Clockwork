@@ -40,7 +40,7 @@
                 row.style.fontStyle = "italic";
 
                 var offsetPos = parsedResponse.time.lastIndexOf("+");
-                var spacedTime = null;
+                var spacedTime = "";
                 if (offsetPos >= 0) {
                     spacedTime = parsedResponse.time.replace("+", " +");
                 }
@@ -116,7 +116,7 @@
             {
                 foreach (var timeHist in timeHistory.OrderByDescending(x => x.CurrentTimeQueryId))
                 {
-                    string spacedTime = null;
+                    string spacedTime = string.Empty;
                     var offsetIndex = timeHist.Time.LastIndexOf('+');
                     if (offsetIndex >= 0)
                     {
