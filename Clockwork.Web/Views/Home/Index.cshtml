@@ -39,8 +39,22 @@
                 row.style.fontWeight = "bold";
                 row.style.fontStyle = "italic";
 
+                var offsetPos = parsedResponse.time.lastIndexOf("+");
+                var spacedTime = null;
+                if (offsetPos >= 0) {
+                    spacedTime = parsedResponse.time.replace("+", " +");
+                }
+                else {
+                    offsetPos = parsedResponse.time.lastIndexOf("-");
+                    if (offsetPos >= 0) {
+                        var first = parsedResponse.time.slice(0, offsetPos - 1);
+                        var last = parsedResponse.time.slice(offsetPos);
+                        spacedTime = first.concat(last.replace("-", " -"));
+                    }
+                }
+
                 id.innerHTML = parsedResponse.currentTimeQueryId;
-                time.innerHTML = parsedResponse.time.replace("T", " ");
+                time.innerHTML = spacedTime.replace("T", " ");
                 utc.innerHTML = parsedResponse.utcTime.replace("T", " ").substring(0, parsedResponse.utcTime.length - 1);
                 ip.innerHTML = parsedResponse.clientIp;
             }
@@ -102,9 +116,23 @@
             {
                 foreach (var timeHist in timeHistory.OrderByDescending(x => x.CurrentTimeQueryId))
                 {
+                    string spacedTime = null;
+                    var offsetIndex = timeHist.Time.LastIndexOf('+');
+                    if (offsetIndex >= 0)
+                    {
+                        spacedTime = timeHist.Time.Replace("+", " +");
+                    }
+                    else
+                    {
+                        offsetIndex = timeHist.Time.LastIndexOf('-');
+                        if (offsetIndex >= 0)
+                        {
+                            spacedTime = timeHist.Time.Insert(offsetIndex, " ");
+                        }
+                    }
                     <tr>
                         <td>@timeHist.CurrentTimeQueryId</td>
-                        <td>@timeHist.Time.Replace('T', ' ')</td>
+                        <td>@spacedTime.Replace('T', ' ')</td>
                         <td>@timeHist.UtcTime.Replace('T', ' ')</td>
                         <td>@timeHist.ClientIp</td>
                     </tr>

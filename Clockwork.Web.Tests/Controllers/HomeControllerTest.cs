@@ -6,6 +6,7 @@ using System.Text;
 using System.Web.Mvc;
 using Clockwork.Web;
 using Clockwork.Web.Controllers;
+using Clockwork.Web.Models;
 
 namespace Clockwork.Web.Tests.Controllers
 {
